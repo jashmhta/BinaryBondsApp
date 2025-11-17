@@ -1,30 +1,52 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+export default function IndexScreen() {
+  const { user, loading } = useAuth();
+  const { theme } = useTheme();
+  const router = useRouter();
 
-export default function Index() {
-  console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/login');
+      }
+    }
+  }, [user, loading]);
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[theme.colors.background, theme.colors.surface]}
+      style={styles.container}
+    >
       <Image
-        source={require("../assets/images/app-image.png")}
-        style={styles.image}
+        source={{ uri: 'https://customer-assets.emergentagent.com/job_c1754347-3918-4dfe-a5e7-7e780303eeac/artifacts/4kclnvfq_cropped-cropped-c772297acc5500801168334cd6e2e5dd.png' }}
+        style={styles.logo}
+        resizeMode="contain"
       />
-    </View>
+      <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0c0c0c",
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
+  logo: {
+    width: 200,
+    height: 80,
+    marginBottom: 30,
+  },
+  loader: {
+    marginTop: 20,
   },
 });
